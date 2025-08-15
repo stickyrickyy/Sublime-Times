@@ -1,0 +1,29 @@
+name: sublime-times
+region: sgp  # Change to nyc, sfo, ams, fra, blr if preferred
+services:
+  - name: web
+    environment_slug: python
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    source_dir: /
+    http_port: 8080
+    run_command: gunicorn -w 2 -k gthread -t 120 -b 0.0.0.0:$PORT times:app
+    routes:
+      - path: /
+    health_check:
+      http_path: /
+    envs:
+      - key: SECRET_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+        value: "CHANGE_ME"       # set in DO UI after deploy
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: "postgresql+psycopg2://USER:PASSWORD@HOST:5432/DBNAME"  # set in DO UI
+      - key: ADMIN_USERNAME
+        scope: RUN_TIME
+        value: "admin"
+      - key: ADMIN_PASSWORD
+        scope: RUN_TIME
+        value: "admin"
